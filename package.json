@@ -1,0 +1,12 @@
+{
+	"name": "np-integration-test",
+	"version": "0.0.0",
+	"private": true,
+	"files": [
+		"*.js"
+	],
+	"dependencies": {
+		"ava": "^3.10.1",
+		"execa": "^4.0.3"
+	}
+}
