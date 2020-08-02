@@ -5,8 +5,14 @@
 	"files": [
 		"*.js"
 	],
+	"scripts": {
+		"test": "xo"
+	},
 	"dependencies": {
 		"ava": "^3.10.1",
 		"execa": "^4.0.3"
+	},
+	"devDependencies": {
+		"xo": "^0.32.1"
 	}
 }

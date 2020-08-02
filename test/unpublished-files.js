@@ -9,7 +9,6 @@ test.before(async t => {
 });
 
 test.serial('file `new` to package with tags added', async t => {
-	// given
 	await execa('git', ['tag', 'v0.0.0']);
 	await execa('touch', ['new']);
 	await execa('git', ['add', 'new']);
@@ -25,12 +24,10 @@ test.serial('file `new` to package with tags added', async t => {
 });
 
 test.serial('file `new` to package without tags added', async t => {
-	// given
 	await execa('touch', ['new']);
 
 	t.teardown(() => {
 		fs.unlinkSync('new');
 	});
 	t.deepEqual(await util.getNewAndUnpublishedFiles({files: ['*.js']}), ['new']);
-	
 });
