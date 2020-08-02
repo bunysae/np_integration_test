@@ -8,14 +8,29 @@ test.before(async t => {
 	await t.throwsAsync(gitUtil.latestTag(), null, 'prerequisites not met: repository should not contain any tags');
 });
 
-test.before(async () => {
-	await execa('touch', ['new']);	
-});
+test.serial('file `new` to package with tags added', async t => {
+	// given
+	await execa('git', ['tag', 'v0.0.0']);
+	await execa('touch', ['new']);
+	await execa('git', ['add', 'new']);
+	await execa('git', ['commit', '-m', 'new file added']);
 
-test.after.always(() => {
-	fs.unlinkSync('new');
-});
+	t.teardown(async () => {
+		await execa('git', ['rm', 'new']);
+		await execa('git', ['tag', '-d', 'v0.0.0']);
+		await execa('git', ['commit', '-m', 'new file deleted']);
+	});
 
-test('newly created file `new` is a unpublished file', async t => {
 	t.deepEqual(await util.getNewAndUnpublishedFiles({files: ['*.js']}), ['new']);
+});
+
+test.serial('file `new` to package without tags added', async t => {
+	// given
+	await execa('touch', ['new']);
+
+	t.teardown(() => {
+		fs.unlinkSync('new');
+	});
+	t.deepEqual(await util.getNewAndUnpublishedFiles({files: ['*.js']}), ['new']);
+	
 });
