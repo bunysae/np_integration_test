@@ -57,3 +57,13 @@ test.serial('files with long pathnames added', async t => {
 
 	t.deepEqual(await util.getNewAndUnpublishedFiles({files: ['*.js']}), [path.join(longPath, 'file1'), path.join(longPath, 'file2')]);
 });
+
+test.serial('no new files added', async t => {
+	await execa('git', ['tag', 'v0.0.0']);
+
+	t.context.teardown = async () => {
+		await execa('git', ['tag', '-d', 'v0.0.0']);
+	};
+
+	t.deepEqual(await util.getNewAndUnpublishedFiles({files: ['*.js']}), []);
+});
