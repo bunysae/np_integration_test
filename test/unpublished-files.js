@@ -15,29 +15,33 @@ test.afterEach.always(async t => {
 	}
 });
 
-test.serial('file `new` to package with tags added', async t => {
+test.serial('files to package with tags added', async t => {
 	await execa('git', ['tag', 'v0.0.0']);
 	await execa('touch', ['new']);
-	await execa('git', ['add', 'new']);
-	await execa('git', ['commit', '-m', 'new file added']);
+	await execa('touch', ['index.js']);
+	await execa('git', ['add', 'new', 'index.js']);
+	await execa('git', ['commit', '-m', 'new files added']);
 
 	t.context.teardown = async () => {
 		await execa('git', ['rm', 'new']);
+		await execa('git', ['rm', 'index.js']);
 		await execa('git', ['tag', '-d', 'v0.0.0']);
-		await execa('git', ['commit', '-m', 'new file deleted']);
+		await execa('git', ['commit', '-m', 'new files deleted']);
 	};
 
-	t.deepEqual(await util.getNewAndUnpublishedFiles({files: ['*.js']}), ['new']);
+	t.deepEqual(await util.getNewFiles({files: ['*.js']}), {unpublished: ['new'], firstTime: ['index.js']});
 });
 
 test.serial('file `new` to package without tags added', async t => {
 	await execa('touch', ['new']);
+	await execa('touch', ['index.js']);
 
 	t.context.teardown = () => {
 		fs.unlinkSync('new');
+		fs.unlinkSync('index.js');
 	};
 
-	t.deepEqual(await util.getNewAndUnpublishedFiles({files: ['*.js']}), ['new']);
+	t.deepEqual(await util.getNewFiles({files: ['index.js']}), {unpublished: ['new'], firstTime: ['index.js']});
 });
 
 test.serial('files with long pathnames added', async t => {
@@ -55,7 +59,7 @@ test.serial('files with long pathnames added', async t => {
 		await execa('git', ['commit', '-m', 'new files deleted']);
 	};
 
-	t.deepEqual(await util.getNewAndUnpublishedFiles({files: ['*.js']}), [path.join(longPath, 'file1'), path.join(longPath, 'file2')]);
+	t.deepEqual(await util.getNewFiles({files: ['*.js']}), {unpublished: [path.join(longPath, 'file1'), path.join(longPath, 'file2')], firstTime: []});
 });
 
 test.serial('no new files added', async t => {
@@ -65,5 +69,5 @@ test.serial('no new files added', async t => {
 		await execa('git', ['tag', '-d', 'v0.0.0']);
 	};
 
-	t.deepEqual(await util.getNewAndUnpublishedFiles({files: ['*.js']}), []);
+	t.deepEqual(await util.getNewFiles({files: ['*.js']}), {unpublished: [], firstTime: []});
 });
