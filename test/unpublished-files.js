@@ -1,7 +1,7 @@
 const test = require('ava');
 const execa = require('execa');
-const util = require('../../source/util.js');
-const gitUtil = require('../../source/git-util.js');
+const util = require('../../source/util');
+const gitUtil = require('../../source/git-util');
 const fs = require('fs');
 const path = require('path');
 
